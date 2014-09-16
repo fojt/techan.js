@@ -9,6 +9,9 @@ module.exports = function() {
     ema: ema,
     macd: require('./macd')(indicatorMixin, accessor.ohlc, ema),
     rsi: require('./rsi')(indicatorMixin, accessor.ohlc, ema),
+    aroon: require('./aroon')(indicatorMixin, accessor.ohlc, ema),
+    stochastic: require('./stochastic')(indicatorMixin, accessor.ohlc, ema),
+    williams: require('./williams')(indicatorMixin, accessor.ohlc, ema),
     sma: require('./sma')(indicatorMixin, accessor.ohlc)
   };
 };

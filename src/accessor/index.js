@@ -7,6 +7,9 @@ module.exports = function() {
     volume: require('./volume'),
     macd: require('./macd'),
     rsi: require('./rsi'),
+    aroon: require('./aroon'),
+    stochastic: require('./stochastic'),
+    williams: require('./williams'),
     trendline: require('./trendline'),
     value: require('./value')
   };
