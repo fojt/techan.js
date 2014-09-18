@@ -58,6 +58,9 @@ techanModule('plot', function(specBuilder) {
       it('Then plot.rsi should be defined', function() {
         expect(bucket.plot.rsi).toBeDefined();
       });
+      it('Then plot.aroon should be defined', function() {
+        expect(bucket.plot.aroon).toBeDefined();
+      });
 
       it('Then plot.volume should be defined', function() {
         expect(bucket.plot.volume).toBeDefined();

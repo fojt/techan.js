@@ -19,6 +19,10 @@ techanModule('accessor', function(specBuilder) {
         expect(scope.accessor.rsi).toBeDefined();
       });
 
+      it('Then accessor.aroon should be defined', function() {
+        expect(scope.accessor.aroon).toBeDefined();
+      });
+
       it('Then accessor.trendline should be defined', function() {
         expect(scope.accessor.trendline).toBeDefined();
       });
