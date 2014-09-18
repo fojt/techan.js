@@ -1,9 +1,10 @@
 'use strict';
 
 module.exports = function() {
+
   var date = function(d) { return d.date; },
-      aroon = function(d) { return d.aroon; },
-      aroonDown = function(d) { return d.aroonDown; },
+      up = function(d) { return d.aroonUp; },
+      down = function(d) { return d.aroonDown; },
       overbought = function(d) { return d.overbought; },
       oversold = function(d) { return d.oversold; },
       middle = function(d) { return d.middle; };
@@ -19,14 +20,14 @@ module.exports = function() {
     return bind();
   };
 
-  accessor.aroon = function(_) {
-    if (!arguments.length) return aroon;
-    aroon = _;
+  accessor.up = function(_) {
+    if (!arguments.length) return up;
+    up = _;
     return bind();
   };
-  accessor.aroonDown = function(_) {
-    if (!arguments.length) return aroonDown;
-    aroonDown = _;
+  accessor.down = function(_) {
+    if (!arguments.length) return down;
+    down = _;
     return bind();
   };
 
@@ -51,8 +52,8 @@ module.exports = function() {
   function bind() {
     // TODO These methods will need to know if the variables are functions or values and execute as such
     accessor.d = date;
-    accessor.aup = aroon;
-    accessor.adown = aroonDown;
+    accessor.up = up;
+    accessor.down = down;
     accessor.ob = overbought;
     accessor.os = oversold;
     accessor.m = middle;

@@ -28,6 +28,6 @@ module.exports = function(accessor_aroon, plot, plotMixin) {  // Injected depend
 function refresh(g, accessor, x, y, plot) {
   g.selectAll('path.overbought').attr('d', plot.horizontalPathLine(accessor.d, x, accessor.ob, y));
   g.selectAll('path.oversold').attr('d', plot.horizontalPathLine(accessor.d, x, accessor.os, y));
-  g.selectAll('path.aroon.up').attr('d', plot.pathLine(accessor.d, x, accessor.aup, y));
-  g.selectAll('path.aroon.down').attr('d', plot.pathLine(accessor.d, x, accessor.adown, y));
+  g.selectAll('path.aroon.up').attr('d', plot.pathLine(accessor.d, x, accessor.up, y));
+  g.selectAll('path.aroon.down').attr('d', plot.pathLine(accessor.d, x, accessor.down, y));
 }

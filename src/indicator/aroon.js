@@ -25,12 +25,12 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
               mini = j;
             }
           }
-          var aroon = ((period-maxi)/period)*100;
+          var aroonUp = ((period-maxi)/period)*100;
           var aroonDown = ((period-mini)/period)*100;
-          return datum(p.accessor.d(d), aroon,aroonDown, middle, overbought, oversold);
+          return datum(p.accessor.d(d), aroonUp,aroonDown, middle, overbought, oversold);
         }
         else return datum(p.accessor.d(d));
-      }).filter(function(d) { return d.aroon; });
+      }).filter(function(d) { return d.aroonUp; });
     }
 
     indicator.period = function(_) {
@@ -64,7 +64,7 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
   };
 };
 
-function datum(date, aroon,aroonDown, middle, overbought, oversold) {
-  if(aroon) return { date: date, aroon: aroon,aroonDown:aroonDown, middle: middle, overbought: overbought, oversold: oversold };
-  else return { date: date, aroon: null,aroonDown:null, middle: null, overbought: null, oversold: null };
+function datum(date, aroonUp,aroonDown, middle, overbought, oversold) {
+  if(aroonUp) return { date: date, aroonUp: aroonUp,aroonDown:aroonDown, middle: middle, overbought: overbought, oversold: oversold };
+  else return { date: date, aroonUp: null,aroonDown:null, middle: null, overbought: null, oversold: null };
 }
