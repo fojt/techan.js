@@ -3,8 +3,8 @@
 module.exports = function() {
 
   var date = function(d) { return d.date; },
-      up = function(d) { return d.aroonUp; },
-      down = function(d) { return d.aroonDown; },
+      up = function(d) { return d.up; },
+      down = function(d) { return d.down; },
       overbought = function(d) { return d.overbought; },
       oversold = function(d) { return d.oversold; },
       middle = function(d) { return d.middle; };
