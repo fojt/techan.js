@@ -1,8 +1,8 @@
 module.exports = {
     plot: [
-        { date: new Date("2014-03-05"), up: 90, down:65, overbought: 70, oversold: 30, middle: 0 },
-        { date: new Date("2014-03-06"), up: 85, down:60, overbought: 70, oversold: 30, middle: 0 },
-        { date: new Date("2014-03-07"), up: 80, down:55, overbought: 70, oversold: 30, middle: 0 }
+        { date: new Date("2014-03-05"), up: 90, down:65, oscillator:25, overbought: 70, oversold: 30, middle: 0 },
+        { date: new Date("2014-03-06"), up: 85, down:60, oscillator:25, overbought: 70, oversold: 30, middle: 0 },
+        { date: new Date("2014-03-07"), up: 80, down:55, oscillator:25, overbought: 70, oversold: 30, middle: 0 }
     ],
     input: [
         { date: new Date(0), high: 44.00, low:43.00 },
@@ -35,15 +35,15 @@ module.exports = {
         { date: new Date(27), high: 44.70, low:42.70 }
     ],
     expected: [
-        { date: new Date(19), up: 85, down:60, middle : 50, overbought : 70, oversold : 30 },
-        { date: new Date(20), up: 80, down:55, middle : 50, overbought : 70, oversold : 30 },
-        { date: new Date(21), up: 75, down:50, middle : 50, overbought : 70, oversold : 30 },
-        { date: new Date(22), up: 70, down:45, middle : 50, overbought : 70, oversold : 30 },
-        { date: new Date(23), up: 65,down:40, middle : 50, overbought : 70, oversold : 30 },
-        { date: new Date(24), up: 60, down:35, middle : 50, overbought : 70, oversold : 30 },
-        { date: new Date(25), up: 55, down:30, middle : 50, overbought : 70, oversold : 30 },
-        { date: new Date(25), up: 50, down:25, middle : 50, overbought : 70, oversold : 30 },
-        { date: new Date(25), up: 45, down:20, middle : 50, overbought : 70, oversold : 30 },
+        { date: new Date(19), up: 90, down:65, oscillator:25, middle : 0, overbought : 70, oversold : 30 },
+        { date: new Date(20), up: 85, down:60, oscillator:25,middle : 0, overbought : 70, oversold : 30 },
+        { date: new Date(21), up: 80, down:55.00000000000001, oscillator:24.999999999999993, middle : 0, overbought : 70, oversold : 30 },
+        { date: new Date(22), up: 75, down:50, oscillator:25, middle : 0, overbought : 70, oversold : 30 },
+        { date: new Date(23), up: 70,down:45, oscillator:25, middle : 0, overbought : 70, oversold : 30 },
+        { date: new Date(24), up: 65, down:40, oscillator:25, middle : 0, overbought : 70, oversold : 30 },
+        { date: new Date(25), up: 60, down:35, oscillator:25, middle : 0, overbought : 70, oversold : 30 },
+        { date: new Date(26), up: 55.00000000000001, down:30, oscillator:25.000000000000007, middle : 0, overbought : 70, oversold : 30 },
+        { date: new Date(27), up: 50, down:25, oscillator:25, middle : 0, overbought : 70, oversold : 30 },
 
     ]
 };

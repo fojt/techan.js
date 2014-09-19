@@ -50,6 +50,20 @@ module.exports = function(d3) {
           .range([1, 0]);
       },
 
+      aroon: function () {
+        return d3.scale.linear().domain([-100, 100])
+          .range([1, 0]);
+      },
+      stochastic: function () {
+        return d3.scale.linear().domain([0, 100])
+          .range([1, 0]);
+      },
+
+      williams: function () {
+        return d3.scale.linear().domain([0, 100])
+          .range([1, 0]);
+      },
+
       momentum: function(data, accessor) {
         accessor = accessor || accessors.value();
         return pathScale(d3, data, accessor, 0.04);

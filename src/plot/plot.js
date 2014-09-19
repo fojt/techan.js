@@ -53,6 +53,13 @@ module.exports = function(d3) {
       return d3.svg.line().interpolate('monotone')
         .x(function(d) { return x(accessor_date(d)); } )
         .y(function(d) { return y(accessor_value(d)); } );
-    }
+    },
+
+      pathArea: function(accessor_date, x, accessor_value, y, yBase) {
+          return d3.svg.area().interpolate('monotone')
+              .x(function(d) { return x(accessor_date(d)); } )
+              .y0(function(d) { return y(yBase);})
+              .y1(function(d) { return y(accessor_value(d)); } );
+      }
   };
 };

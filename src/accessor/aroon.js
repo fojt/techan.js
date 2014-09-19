@@ -5,6 +5,7 @@ module.exports = function() {
   var date = function(d) { return d.date; },
       up = function(d) { return d.up; },
       down = function(d) { return d.down; },
+      oscillator = function(d) { return d.oscillator; },
       overbought = function(d) { return d.overbought; },
       oversold = function(d) { return d.oversold; },
       middle = function(d) { return d.middle; };
@@ -31,6 +32,12 @@ module.exports = function() {
     return bind();
   };
 
+  accessor.oscillator = function(_) {
+    if (!arguments.length) return oscillator;
+    oscillator = _;
+    return bind();
+  };
+
   accessor.overbought = function(_) {
     if (!arguments.length) return overbought;
     overbought = _;
@@ -54,6 +61,7 @@ module.exports = function() {
     accessor.d = date;
     accessor.up = up;
     accessor.down = down;
+    accessor.oscillator = oscillator;
     accessor.ob = overbought;
     accessor.os = oversold;
     accessor.m = middle;

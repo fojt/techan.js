@@ -5,12 +5,12 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
     var p = {},  // Container for private, direct access mixed in variables
         period = 20,
         overbought = 70,
-        middle = 50,
+        middle = 0,
         oversold = 30;
 
     function indicator(data) {
       return data.map(function(d, i) {
-        if(i >= period){
+        if(i >= (period-1)){
           var max = 0;
           var maxi = 0;
           var min = 10000;
@@ -27,7 +27,8 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
           }
           var up = ((period-maxi)/period)*100;
           var down = ((period-mini)/period)*100;
-          return datum(p.accessor.d(d), up,down, middle, overbought, oversold);
+          var oscillator = up - down;
+          return datum(p.accessor.d(d), up,down, oscillator, middle, overbought, oversold);
         }
         else return datum(p.accessor.d(d));
       }).filter(function(d) { return d.up; });
@@ -64,7 +65,7 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
   };
 };
 
-function datum(date, up,down, middle, overbought, oversold) {
-  if(up) return { date: date, up: up,down:down, middle: middle, overbought: overbought, oversold: oversold };
-  else return { date: date, up: null,down:null, middle: null, overbought: null, oversold: null };
+function datum(date, up,down,oscillator, middle, overbought, oversold) {
+  if(up) return { date: date, up: up,down:down,oscillator:oscillator, middle: middle, overbought: overbought, oversold: oversold };
+  else return { date: date, up: null,down:null,oscillator:null, middle: null, overbought: null, oversold: null };
 }

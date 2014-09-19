@@ -9,6 +9,9 @@ module.exports = function(accessor_aroon, plot, plotMixin) {  // Injected depend
 
       group.entry.append('path').attr('class', 'overbought');
       group.entry.append('path').attr('class', 'oversold');
+      group.entry.append('path').attr('class', 'aroon oscillator');
+      group.entry.append('path').attr('class', 'aroon oscillatorArea');
+      group.entry.append('path').attr('class', 'aroon middle');
       group.entry.append('path').attr('class', 'aroon up');
       group.entry.append('path').attr('class', 'aroon down');
       aroon.refresh(g);
@@ -28,6 +31,9 @@ module.exports = function(accessor_aroon, plot, plotMixin) {  // Injected depend
 function refresh(g, accessor, x, y, plot) {
   g.selectAll('path.overbought').attr('d', plot.horizontalPathLine(accessor.d, x, accessor.ob, y));
   g.selectAll('path.oversold').attr('d', plot.horizontalPathLine(accessor.d, x, accessor.os, y));
+  g.selectAll('path.aroon.oscillator').attr('d', plot.pathLine(accessor.d, x, accessor.oscillator, y));
+  g.selectAll('path.aroon.oscillatorArea').attr('d', plot.pathArea(accessor.d, x, accessor.oscillator, y,0));
+  g.selectAll('path.aroon.middle').attr('d', plot.pathLine(accessor.d, x, accessor.m, y));
   g.selectAll('path.aroon.up').attr('d', plot.pathLine(accessor.d, x, accessor.up, y));
   g.selectAll('path.aroon.down').attr('d', plot.pathLine(accessor.d, x, accessor.down, y));
 }
