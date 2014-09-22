@@ -10,6 +10,7 @@ module.exports = function() {
     aroon: require('./aroon'),
     stochastic: require('./stochastic'),
     williams: require('./williams'),
+    bollinger: require('./bollinger'),
     trendline: require('./trendline'),
     value: require('./value')
   };
