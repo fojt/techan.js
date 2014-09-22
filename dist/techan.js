@@ -1,9 +1,9 @@
 /*
- TechanJS v0.2.0
+ TechanJS v0.3.0-1
  (c) 2014 - 2014 Andre Dumas | https://github.com/andredumas/techan.js
 */
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.techan=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-'use strict';module.exports='0.2.0';
+'use strict';module.exports='0.3.0-1';
 },{}],2:[function(_dereq_,module,exports){
 'use strict';
 
@@ -337,7 +337,7 @@ module.exports = function() {
 },{}],9:[function(_dereq_,module,exports){
 'use strict';
 
-module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependencies
+module.exports = function(indicatorMixin, accessor_ohlc, alpha_init) {  // Injected dependencies
   return function() { // Closure function
     var p = {},  // Container for private, direct access mixed in variables
       period = 10,
@@ -353,7 +353,7 @@ module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependen
 
     indicator.init = function() {
       previous = null;
-      alpha = 2/(period+1);
+      alpha = alpha_init(period);
       initialTotal = 0;
       initialCount = 0;
       return indicator;
@@ -397,15 +397,25 @@ module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependen
 module.exports = function() {
   var indicatorMixin = _dereq_('./indicatormixin')(),
       accessor = _dereq_('../accessor')(),
-      ema = _dereq_('./ema')(indicatorMixin, accessor.ohlc);
+      ema_init = _dereq_('./ema'),
+      ema = ema_init(indicatorMixin, accessor.ohlc, ema_alpha_init);
 
   return {
     ema: ema,
     macd: _dereq_('./macd')(indicatorMixin, accessor.ohlc, ema),
     rsi: _dereq_('./rsi')(indicatorMixin, accessor.ohlc, ema),
-    sma: _dereq_('./sma')(indicatorMixin, accessor.ohlc)
+    sma: _dereq_('./sma')(indicatorMixin, accessor.ohlc),
+    wilderma: ema_init(indicatorMixin, accessor.ohlc, wilder_alpha_init)
   };
 };
+
+function ema_alpha_init(period) {
+  return 2/(period+1);
+}
+
+function wilder_alpha_init(period) {
+  return 1/period;
+}
 },{"../accessor":2,"./ema":9,"./indicatormixin":11,"./macd":12,"./rsi":13,"./sma":14}],11:[function(_dereq_,module,exports){
 'use strict';
 
@@ -1069,7 +1079,8 @@ module.exports = function(d3) {
     moneyflow: line(accessor.value, plot, plotMixin, true),
     sma: line(accessor.value, plot, plotMixin),
     supstance: _dereq_('./supstance')(d3.behavior.drag, d3_event, d3.select, accessor.value, plot, plotMixin),
-    trendline: _dereq_('./trendline')(d3.behavior.drag, d3_event, d3.select, accessor.trendline, plot, plotMixin)
+    trendline: _dereq_('./trendline')(d3.behavior.drag, d3_event, d3.select, accessor.trendline, plot, plotMixin),
+    wilderma: line(accessor.value, plot, plotMixin)
   };
 };
 
@@ -1747,17 +1758,30 @@ module.exports = function(d3_scale_linear, d3_time, d3_bisect, techan_util_rebin
 
   var dayFormat = d3_time.format('%b %e'),
       yearFormat = d3_time.format.multi([
-    ['%b %Y', function(d) { return d.getMonth(); }],
-    ['%Y', function() { return true; }]
-  ]);
+        ['%b %Y', function(d) { return d.getMonth(); }],
+        ['%Y', function() { return true; }]
+      ]),
+      intraDayFormat = d3_time.format.multi([
+        [":%S", function(d) { return d.getSeconds(); }],
+        ["%I:%M", function(d) { return d.getMinutes(); }],
+        ["%I %p", function(d) { return d.getHours(); }]
+      ]),
+      genericTickMethod = [d3_time.second, 1, d3_time.format.multi([
+          [":%S", function(d) { return d.getSeconds(); }],
+          ["%I:%M", function(d) { return d.getMinutes(); }],
+          ["%I %p", function(d) { return d.getHours(); }],
+          ['%b %e', function() { return true; }]
+        ])
+      ];
 
-  var dailyTickSteps = [
-    864e5,  // 1-day
-    6048e5, // 1-week
-    2592e6, // 1-month
-    7776e6, // 3-month
-    31536e6 // 1-year
-  ];
+  var dailyStep = 864e5,
+      dailyTickSteps = [
+        dailyStep,  // 1-day
+        6048e5,     // 1-week
+        2592e6,     // 1-month
+        7776e6,     // 3-month
+        31536e6     // 1-year
+      ];
 
   var dailyTickMethod = [
     [d3_time.day, 1, dayFormat],
@@ -1768,6 +1792,14 @@ module.exports = function(d3_scale_linear, d3_time, d3_bisect, techan_util_rebin
   ];
 
   var intraDayTickSteps = [
+    1e3,    // 1-second
+    5e3,    // 5-second
+    15e3,   // 15-second
+    3e4,    // 30-second
+    6e4,    // 1-minute
+    3e5,    // 5-minute
+    9e5,    // 15-minute
+    18e5,   // 30-minute
     36e5,   // 1-hour
     108e5,  // 3-hour
     216e5,  // 6-hour
@@ -1776,20 +1808,31 @@ module.exports = function(d3_scale_linear, d3_time, d3_bisect, techan_util_rebin
   ];
 
   var intraDayTickMethod = [
-    [d3_time.hour, 1],
-    [d3_time.hour, 3],
-    [d3_time.hour, 6],
-    [d3_time.hour, 12],
-    [d3_time.day, 1]
+    [d3_time.second, 1, intraDayFormat],
+    [d3_time.second, 5, intraDayFormat],
+    [d3_time.second, 15, intraDayFormat],
+    [d3_time.second, 30, intraDayFormat],
+    [d3_time.minute, 1, intraDayFormat],
+    [d3_time.minute, 5, intraDayFormat],
+    [d3_time.minute, 15, intraDayFormat],
+    [d3_time.minute, 30, intraDayFormat],
+    [d3_time.hour, 1, intraDayFormat],
+    [d3_time.hour, 3, intraDayFormat],
+    [d3_time.hour, 6, intraDayFormat],
+    [d3_time.hour, 12, intraDayFormat],
+    [d3_time.day, 1, dayFormat]
   ];
 
   function tickMethod(visibleDomain, count) {
-    // TODO Is this daily data or intra day data? This will dictate which 'mode' to select.
-    var tickMethods = dailyTickMethod,
-        tickSteps = dailyTickSteps;
+    if(visibleDomain.length == 1) return genericTickMethod; // If we only have 1 to display, show the generic tick method
 
-    var target = (visibleDomain[visibleDomain.length-1] - visibleDomain[0])/count,
+    // Determine whether we're showing daily or intraday data
+    var intraDay = (visibleDomain[visibleDomain.length-1] - visibleDomain[0])/dailyStep < 1,
+        tickMethods = intraDay ? intraDayTickMethod : dailyTickMethod,
+        tickSteps = intraDay ? intraDayTickSteps : dailyTickSteps,
+        target = (visibleDomain[visibleDomain.length-1] - visibleDomain[0])/count,
         i = d3_bisect(tickSteps, target);
+
     return i ? tickMethods[target/tickSteps[i-1] < tickSteps[i]/target ? i-1 : i] : tickMethods[i];
   }
 

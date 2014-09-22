@@ -62,6 +62,10 @@ techanModule('plot', function(specBuilder) {
         expect(bucket.plot.aroon).toBeDefined();
       });
 
+      it('Then plot.wilderma should be defined', function() {
+        expect(bucket.plot.wilderma).toBeDefined();
+      });
+
       it('Then plot.volume should be defined', function() {
         expect(bucket.plot.volume).toBeDefined();
       });
