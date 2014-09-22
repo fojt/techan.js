@@ -12,26 +12,15 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
 
         var j;
       return data.map(function(d, i) {
-
+        var middleBand = signalLine.average(p.accessor(d));
         if(i >= period) {
-            var middleBand = signalLine.average(p.accessor(d));
-//            var mid;
-//            mid = 0;
-//            for(j = 0;j<period;j++){
-//                mid += data[i-j].close ;
-//            }
-//            middleBand = mid/period;
-
             var sum = 0;
             for(j = 0;j<period;j++){
                 sum += (Math.pow(   (data[i-j].close - middleBand)  ,2 ) );
             }
-
             sd = Math.sqrt( sum/period );
-
             var upperBand = middleBand+sdMultiplication*sd,
                 lowerBand = middleBand-sdMultiplication*sd;
-
             return datum(p.accessor.d(d), middleBand, upperBand, lowerBand);
         }
         else return datum(p.accessor.d(d));
