@@ -64,6 +64,13 @@ module.exports = function(d3) {
           .range([1, 0]);
       },
 
+      bollinger: function (data, accessor) {
+         accessor = accessor || accessors.ohlc();
+         return d3.scale.linear()
+              .domain([d3.min(data.map(accessor.lower())), d3.max(data.map(accessor.upper()))].map(widen(0.02)))
+              .range([1, 0]);
+      },
+
       momentum: function(data, accessor) {
         accessor = accessor || accessors.value();
         return pathScale(d3, data, accessor, 0.04);
