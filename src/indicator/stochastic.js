@@ -30,7 +30,12 @@ module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependen
                 min[k] = data[i-j-k].low;
               }
             }
-            stochasticKBuffer[k] = ((data[i-k].close-min[k])/(max[k]-min[k]))*100;
+            var diff = (max[k]-min[k]);
+            if(diff > 0) {
+                stochasticKBuffer[k] = ((data[i - k].close - min[k]) / (max[k] - min[k])) * 100;
+            }else{
+                stochasticKBuffer[k] = 50;
+            }
             stochasticD +=stochasticKBuffer[k];
           }
           var stochasticK =stochasticKBuffer[0];// ((d.close-min)/(max-min))*100;
