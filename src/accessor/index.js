@@ -7,6 +7,7 @@ module.exports = function() {
     volume: require('./volume'),
     macd: require('./macd'),
     rsi: require('./rsi'),
+    adx: require('./adx'),
     aroon: require('./aroon'),
     stochastic: require('./stochastic'),
     williams: require('./williams'),

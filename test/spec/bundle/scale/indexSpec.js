@@ -45,6 +45,10 @@ techanModule('scale', function(specBuilder) {
         return scope.scale.plot.rsi;
       }, techan.accessor.rsi());
 
+      optionalAccessorTest('scale.plot.adx', function() {
+        return scope.scale.plot.adx;
+      }, techan.accessor.adx());
+
       optionalAccessorTest('scale.plot.momentum', function() {
         return scope.scale.plot.momentum;
       }, techan.accessor.value());

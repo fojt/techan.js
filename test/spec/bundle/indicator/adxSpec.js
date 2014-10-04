@@ -1,28 +1,28 @@
-techanModule('indicator/aroon', function(specBuilder) {
-    'use strict';
-
-    var techan = require('../../../../src/techan'),
-        data = require('./../_fixtures/data/aroon');
-
-    var actualInit = function() {
-        return techan.indicator.aroon;
-    };
-
-    specBuilder.require(require('../../../../src/indicator/aroon'), function(instanceBuilder) {
-        instanceBuilder.instance('actual', actualInit, function(scope) {
-            describe('And aroon is initialised with defaults', function () {
-                var aroon;
-
-                beforeEach(function () {
-                    aroon = scope.aroon;
-                });
-
-                it('Then on default invoke, aroon should calculate correct values', function() {
-                    aroon(data.input).forEach(function(d, i) {
-                        expect(d).toEqual(data.expected[i]);
-                    });
-                });
-            });
-        });
-    });
-});
+//techanModule('indicator/adx', function(specBuilder) {
+//    'use strict';
+//
+//    var techan = require('../../../../src/techan'),
+//        data = require('./../_fixtures/data/adx');
+//
+//    var actualInit = function() {
+//        return techan.indicator.adx;
+//    };
+//
+//    specBuilder.require(require('../../../../src/indicator/adx'), function(instanceBuilder) {
+//        instanceBuilder.instance('actual', actualInit, function(scope) {
+//            describe('And adx is initialised with defaults', function () {
+//                var adx;
+//
+//                beforeEach(function () {
+//                    adx = scope.adx;
+//                });
+//
+//                it('Then on default invoke, adx should calculate correct values', function() {
+//                    adx(data.input).forEach(function(d, i) {
+//                        expect(d).toEqual(data.expected[i]);
+//                    });
+//                });
+//            });
+//        });
+//    });
+//});

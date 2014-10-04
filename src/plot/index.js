@@ -17,6 +17,7 @@ module.exports = function(d3) {
     close: line(accessor.ohlc, plot, plotMixin),
     volume: require('./volume')(accessor.volume, plot, plotMixin),
     rsi: require('./rsi')(accessor.rsi, plot, plotMixin),
+    adx: require('./adx')(accessor.adx, plot, plotMixin),
     aroon: require('./aroon')(accessor.aroon, plot, plotMixin),
     stochastic: require('./stochastic')(accessor.stochastic, plot, plotMixin),
     williams: require('./williams')(accessor.williams, plot, plotMixin),

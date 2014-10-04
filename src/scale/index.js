@@ -46,7 +46,12 @@ module.exports = function(d3) {
       },
 
       rsi: function () {
-        return d3.scale.linear().domain([0, 100])
+            return d3.scale.linear().domain([0, 100])
+                .range([1, 0]);
+        },
+
+      adx: function () {
+         return d3.scale.linear().domain([0, 100])
           .range([1, 0]);
       },
 
@@ -65,9 +70,12 @@ module.exports = function(d3) {
       },
 
       bollinger: function (data, accessor) {
-         accessor = accessor || accessors.ohlc();
+         accessor = accessor || accessors.bollinger();
          return d3.scale.linear()
-              .domain([d3.min(data.map(accessor.lower())), d3.max(data.map(accessor.upper()))].map(widen(0.02)))
+              .domain([
+                 d3.min(data.map(function(d){return accessor.lower(d);})),
+                 d3.max(data.map(function(d){return accessor.upper(d);}))
+                ].map(widen(0.02)))
               .range([1, 0]);
       },
 

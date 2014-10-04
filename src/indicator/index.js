@@ -11,9 +11,10 @@ module.exports = function() {
     ema: ema,
     macd: require('./macd')(indicatorMixin, accessor.ohlc, ema),
     rsi: require('./rsi')(indicatorMixin, accessor.ohlc, ema),
-	aroon: require('./aroon')(indicatorMixin, accessor.ohlc, ema),
+	aroon: require('./aroon')(indicatorMixin, accessor.ohlc),
     stochastic: require('./stochastic')(indicatorMixin, accessor.ohlc, ema),
     williams: require('./williams')(indicatorMixin, accessor.ohlc, ema),
+    adx: require('./adx')(indicatorMixin, accessor.ohlc, ema),
     bollinger: require('./bollinger')(indicatorMixin, accessor.ohlc, sma),
     sma: require('./sma')(indicatorMixin, accessor.ohlc),
     wilderma: ema_init(indicatorMixin, accessor.ohlc, wilder_alpha_init)
