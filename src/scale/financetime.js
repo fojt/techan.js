@@ -154,6 +154,9 @@ module.exports = function(d3_scale_linear, d3_time, d3_bisect, techan_util_rebin
         steps = method[1];
       }
 
+        if(typeof steps === "undefined"){
+            return [];
+        }
       var intervalRange = interval.range(visibleDomain[0], +visibleDomain[visibleDomain.length-1]+1, steps);
 
       return intervalRange                  // Interval, possibly contains values not in domain
