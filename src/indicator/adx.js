@@ -10,7 +10,6 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
           minusDmEma = indicator_ema().accessor(indicator.accessor()).period(period).init(),
           trEma = indicator_ema().accessor(indicator.accessor()).period(period).init(),
           adxEma = indicator_ema().accessor(indicator.accessor()).period(period).init();
-        console.log("---");
       return data.map(function(d, i) {
         if(i < 1) return datum(p.accessor.d(d));
 
