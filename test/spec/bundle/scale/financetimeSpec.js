@@ -28,12 +28,16 @@ techanModule('scale/financetime', function(specBuilder) {
           expect(financetime.range()).toEqual([48, 1052]);
         });
 
-        it('Then band should correct band', function() {
+        it('Then band should be default of 80%', function() {
           expect(financetime.band()).toEqual(80);
         });
 
-        it('Then scale of first index should return min range', function() {
+        it('Then scale of first index should return min widened range', function() {
           expect(financetime(data[0])).toEqual(100);
+        });
+
+        it('Then scale of last index should return max widened range', function() {
+          expect(financetime(data[data.length-1])).toEqual(1000);
         });
 
         it('Then scale of a value less than minimum should return less than minimum range', function() {
@@ -88,6 +92,70 @@ techanModule('scale/financetime', function(specBuilder) {
 
         it('Then using invert as Array.prototyp.map(invert) of a value about half of range, should return mid domain', function() {
           expect([600].map(financetime.invert)).toEqual([data[5]]);
+        });
+
+        describe('And outerPadding set to none', function() {
+          beforeEach(function() {
+            financetime.outerPadding(0);
+          });
+
+          it('Then outerPadding should be 0', function() {
+            expect(financetime.outerPadding()).toEqual(0);
+          });
+
+          it('Then scale of first index should return min range', function() {
+            expect(financetime(data[0])).toEqual(48);
+          });
+
+          it('Then scale of last index should return max range', function() {
+            expect(financetime(data[data.length-1])).toEqual(1052);
+          });
+
+          describe('And copied', function() {
+            var cloned;
+
+            beforeEach(function() {
+              cloned = financetime.copy();
+            });
+
+            it('Then outerPadding should be 0', function() {
+              expect(cloned.outerPadding()).toEqual(0);
+            });
+
+            it('Then scale of first index should return min range', function() {
+              expect(cloned(data[0])).toEqual(48);
+            });
+          });
+
+          describe('And padding set to none', function() {
+            beforeEach(function() {
+              financetime.padding(0);
+            });
+
+            it('Then padding should be 0', function() {
+              expect(financetime.padding()).toEqual(0);
+            });
+
+            it('Then band should be approximately 100%', function() {
+              expect(financetime.band()).toEqual(111.55555555555556); // (1052-48)/9
+            });
+
+            describe('And copied', function() {
+              var cloned;
+
+              beforeEach(function() {
+                cloned = financetime.copy();
+              });
+
+              it('Then padding should be 0', function() {
+                expect(cloned.padding()).toEqual(0);
+              });
+
+              it('Then band should be approximately of 100%', function() {
+                expect(financetime.band()).toEqual(111.55555555555556); // (1052-48)/9
+              });
+            });
+          });
         });
 
         it('Then ticks should return a distributed range of ticks', function() {

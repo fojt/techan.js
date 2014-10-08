@@ -4,7 +4,7 @@ techanModule('plot/crosshair', function(specBuilder) {
 
   var techan = require('../../../../src/techan'),
       domFixtures = require('../_fixtures/dom'),
-      spies = { g: { parentNode: {} }, plot: {} },
+      spies = { plot: {} },
       crosshair,
       g;
 
@@ -13,8 +13,9 @@ techanModule('plot/crosshair', function(specBuilder) {
   };
 
   var mockInit = function(crosshair) {
+    var plotmixin = require('../../../../src/plot/plotmixin')(d3.scale.linear, techan.scale.financetime);
     spies.d3_mouse = jasmine.createSpy('d3_mouse');
-    return crosshair(d3.select, d3.event, spies.d3_mouse, techan.plot.axisannotation);
+    return crosshair(d3.select, d3.event, spies.d3_mouse, d3.dispatch, techan.plot.axisannotation, plotmixin);
   };
 
   function assertDomStructure(gScope) {
@@ -30,7 +31,11 @@ techanModule('plot/crosshair', function(specBuilder) {
 
     it('Then the first child element should be g.data', function() {
       expect(parent.childNodes[0].nodeName.toLowerCase()).toEqual('g');
-      expect(parent.childNodes[0].className).toEqual('data');
+      expect(parent.childNodes[0].className).toEqual('data top');
+    });
+
+    xit('Then the crosshair should initially be hidden', function() {
+      expect(g.select('g.data.top').style('display')).toBe('none');
     });
 
     it('Then the second child element should be a rect', function() {
@@ -112,6 +117,10 @@ techanModule('plot/crosshair', function(specBuilder) {
           g = domFixtures.g();
         });
 
+        it('Then .on should be defined', function() {
+          expect(crosshair.on).toBeDefined();
+        });
+
         describe('And on default invoke', function() {
           var parent,
               gScope = {g:undefined};
@@ -127,6 +136,18 @@ techanModule('plot/crosshair', function(specBuilder) {
           });
 
           assertDomStructure(gScope);
+
+          describe('And second full invoke', function() {
+            beforeEach(function() {
+              crosshair(g);
+            });
+
+            it('Then it should still refresh without error', function() {
+              expect(parent.innerHTML).not.toContain('NaN');
+            });
+
+            assertDomStructure(gScope);
+          });
 
           describe('And refresh invoke', function() {
             beforeEach(function() {
@@ -151,52 +172,50 @@ techanModule('plot/crosshair', function(specBuilder) {
         });
 
         describe('And selection is mocked', function () {
-          var selectSpies = {};
+          var selection;
 
           beforeEach(function () {
-            // Too many spies MUCH???
-            // Convert to spies on actuals?
-            spies.plot.groupSelect = jasmine.createSpy('groupSelect');
-            spies.plot.groupSelect.and.returnValue({entry: selectSpies, selection: selectSpies});
-            spies.g.selectAll = jasmine.createSpy('selectAll');
-            spies.g.selectAll.and.returnValue(selectSpies);
-            spies.g.select = jasmine.createSpy('select');
-            spies.g.select.and.returnValue(selectSpies);
-            selectSpies.select = spies.g.select;
-            selectSpies.selectAll = spies.g.selectAll;
-            selectSpies.enter = jasmine.createSpy('enter');
-            selectSpies.enter.and.returnValue(selectSpies);
-            selectSpies.exit = jasmine.createSpy('exit');
-            selectSpies.exit.and.returnValue(selectSpies);
-            selectSpies.each = jasmine.createSpy('each');
-            selectSpies.each.and.returnValue(selectSpies);
-            selectSpies.on = jasmine.createSpy('on');
-            selectSpies.on.and.returnValue(selectSpies);
-            selectSpies.remove = jasmine.createSpy('remove');
-            selectSpies.remove.and.returnValue(selectSpies);
-            selectSpies.data = jasmine.createSpy('data');
-            selectSpies.data.and.returnValue(selectSpies);
-            selectSpies.append = jasmine.createSpy('append');
-            selectSpies.append.and.returnValue(selectSpies);
-            selectSpies.attr = jasmine.createSpy('attr');
-            selectSpies.attr.and.returnValue(selectSpies);
-            selectSpies.style = jasmine.createSpy('style');
-            selectSpies.call = jasmine.createSpy('call');
-            selectSpies.call.and.returnValue(selectSpies);
+            selection = jasmine.createSpyObj('selection', ['select', 'selectAll', 'enter', 'exit', 'each',
+              'on', 'remove', 'data', 'append', 'attr', 'style', 'call']);
+
+            selection.select.and.returnValue(selection);
+            selection.selectAll.and.returnValue(selection);
+            selection.enter.and.returnValue(selection);
+            selection.exit.and.returnValue(selection);
+            selection.each.and.returnValue(selection);
+            selection.on.and.returnValue(selection);
+            selection.remove.and.returnValue(selection);
+            selection.data.and.returnValue(selection);
+            selection.append.and.returnValue(selection);
+            selection.attr.and.returnValue(selection);
+            selection.call.and.returnValue(selection);
+            selection.style.and.returnValue(selection);
+
+            spies.plot.groupSelect = jasmine.createSpyObj('groupSelect', ['entry', 'selection']);
+            spies.plot.groupSelect.entry.and.returnValue(selection);
+            spies.plot.groupSelect.selection.and.returnValue(selection);
           });
 
           describe('And on default invoke', function() {
             var mouseRectAttribute,
                 verticalPathLine,
                 horizontalPathLine,
-                mousemoveRefresh;
+                mousemoveRefresh,
+                mouseenter,
+                mouseout;
 
             beforeEach(function() {
-              crosshair(spies.g);
-              mouseRectAttribute = selectSpies.attr.calls.argsFor(7)[0];
-              verticalPathLine = selectSpies.attr.calls.argsFor(8)[1];
-              horizontalPathLine = selectSpies.attr.calls.argsFor(9)[1];
-              mousemoveRefresh = selectSpies.on.calls.argsFor(2)[1];
+              crosshair(selection);
+              mouseRectAttribute = selection.attr.calls.argsFor(7)[0];
+              verticalPathLine = selection.attr.calls.argsFor(8)[1];
+              horizontalPathLine = selection.attr.calls.argsFor(9)[1];
+              mouseenter = selection.on.calls.argsFor(0)[1];
+              mouseout = selection.on.calls.argsFor(1)[1];
+              mousemoveRefresh = selection.on.calls.argsFor(2)[1];
+            });
+
+            it('Then the crosshair should initially be hidden', function() {
+              expect(selection.style).toHaveBeenCalledWith('display', 'none');
             });
 
             it('Then mouse detection rectangle object should be defined', function() {
@@ -251,14 +270,27 @@ techanModule('plot/crosshair', function(specBuilder) {
               expect(mousemoveRefresh).toBeDefined();
             });
 
+            it('Then mouseenter is defined', function() {
+              expect(mouseenter).toBeDefined();
+            });
+
+            it('Then mouseout is defined', function() {
+              expect(mouseout).toBeDefined();
+            });
+
             describe('And on mousemoveRefresh invoke', function() {
+              var listener;
+
               beforeEach(function() {
                 spies.d3_mouse.and.returnValue([1,2]);
-                selectSpies.datum = jasmine.createSpy('datum');
-                selectSpies.datum.and.returnValue(selectSpies);
+                selection.datum = jasmine.createSpy('datum');
+                selection.datum.and.returnValue(selection);
                 // Redefine the annotation refresh
                 crosshair.xAnnotation()[0].refresh = jasmine.createSpy('refresh');
                 crosshair.yAnnotation()[0].refresh = jasmine.createSpy('refresh');
+                listener = jasmine.createSpy('listener');
+                crosshair.on('move', listener);
+
                 mousemoveRefresh();
               });
 
@@ -267,27 +299,75 @@ techanModule('plot/crosshair', function(specBuilder) {
               });
 
               it('Then should set correct path.vertical datum', function() {
-                expect(selectSpies.select.calls.argsFor(4)[0]).toEqual('path.vertical');
-                expect(selectSpies.datum.calls.argsFor(0)[0]).toEqual(1);
+                expect(selection.selectAll.calls.argsFor(6)[0]).toEqual('path.vertical');
+                expect(selection.datum.calls.argsFor(0)[0]).toEqual(1);
               });
 
               it('Then should set correct path.horizontal datum', function() {
-                expect(selectSpies.select.calls.argsFor(5)[0]).toEqual('path.horizontal');
-                expect(selectSpies.datum.calls.argsFor(1)[0]).toEqual(2);
+                expect(selection.selectAll.calls.argsFor(7)[0]).toEqual('path.horizontal');
+                expect(selection.datum.calls.argsFor(1)[0]).toEqual(2);
+              });
+
+              it('Then should update x event coordinate', function() {
+                var d = { value: 123 };
+                selection.each.calls.argsFor(4)[0]([d], 0);
+                expect(d.value).toEqual(1);
+              });
+
+              it('Then should update y event coordindate', function() {
+                var d = { value: 321 };
+                selection.each.calls.argsFor(5)[0]([d], 0);
+                expect(d.value).toEqual(2);
               });
 
               it('Then should refresh x annotation', function() {
-                expect(selectSpies.selectAll.calls.argsFor(6)[0]).toEqual('g.axisannotation.x > g');
-                selectSpies.each.calls.argsFor(6)[0](undefined, 0);
+                expect(selection.selectAll.calls.argsFor(8)[0]).toEqual('g.axisannotation.x > g');
+                selection.each.calls.argsFor(6)[0](undefined, 0);
                 expect(crosshair.xAnnotation()[0].refresh).toHaveBeenCalled();
                 expect(crosshair.yAnnotation()[0].refresh).not.toHaveBeenCalled();
               });
 
               it('Then should refresh y annotation', function() {
-                expect(selectSpies.selectAll.calls.argsFor(7)[0]).toEqual('g.axisannotation.y > g');
-                selectSpies.each.calls.argsFor(7)[0](undefined, 0);
+                expect(selection.selectAll.calls.argsFor(9)[0]).toEqual('g.axisannotation.y > g');
+                selection.each.calls.argsFor(7)[0](undefined, 0);
                 expect(crosshair.xAnnotation()[0].refresh).not.toHaveBeenCalled();
                 expect(crosshair.yAnnotation()[0].refresh).toHaveBeenCalled();
+              });
+
+              it('Then the listener should have been invoked', function() {
+                expect(listener).toHaveBeenCalled();
+              });
+
+              it('Then the listener should have been passed the correct coordinates', function() {
+                expect(listener.calls.argsFor(0)[0]).toEqual([[undefined], [undefined]]); // Mocks won't correctly initialise this array
+              });
+            });
+
+            describe('And on mouseenter invoke', function() {
+              var listener;
+
+              beforeEach(function() {
+                listener = jasmine.createSpy('listener');
+                crosshair.on('enter', listener);
+                mouseenter();
+              });
+
+              it('Then the listener should have been invoked', function() {
+                expect(listener).toHaveBeenCalled();
+              });
+            });
+
+            describe('And on mouseout invoke', function() {
+              var listener;
+
+              beforeEach(function() {
+                listener = jasmine.createSpy('listener');
+                crosshair.on('out', listener);
+                mouseout();
+              });
+
+              it('Then the listener should have been invoked', function() {
+                expect(listener).toHaveBeenCalled();
               });
             });
           });

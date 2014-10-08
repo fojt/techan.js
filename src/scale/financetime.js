@@ -5,14 +5,16 @@
  generally contains data points on days where a market is open but no points when closed, such as weekday
  and weekends respectively. When plot, is done so without weekend gaps.
  */
-module.exports = function(d3_scale_linear, d3_time, d3_bisect, techan_util_rebindCallback, widen, zoomable) {  // Injected dependencies
-  function financetime(index, domain) {
+module.exports = function(d3_scale_linear, d3_time, d3_bisect, techan_util_rebindCallback, scale_widen, zoomable) {  // Injected dependencies
+  function financetime(index, domain, padding, outerPadding) {
     var dateIndexMap,
         tickState = { tickFormat: dailyTickMethod[dailyTickMethod.length-1][2] },
         band = 3;
 
     index = index || d3_scale_linear();
     domain = domain || [new Date(0), new Date(1)];
+    padding = padding === undefined ? 0.2 : padding;
+    outerPadding = outerPadding === undefined ? 0.65 : outerPadding;
 
     /**
      * Scales the value to domain. If the value is not within the domain, will currently brutally round the data:
@@ -68,16 +70,11 @@ module.exports = function(d3_scale_linear, d3_time, d3_bisect, techan_util_rebin
       }
 
       domain = _;
-      domainMap();
-      index.domain([0, domain.length-1]);
-      zoomed();
-      // Widen the outer edges by pulling the domain in to ensure start and end bands are fully visible
-      index.domain(index.range().map(widen(0.65, band)).map(index.invert));
-      return zoomed();
+      return applyDomain();
     };
 
     function zoomed() {
-      band = rangeBand(index, domain);
+      band = rangeBand(index, domain, padding);
       return scale;
     }
 
@@ -85,8 +82,17 @@ module.exports = function(d3_scale_linear, d3_time, d3_bisect, techan_util_rebin
       dateIndexMap = lookupIndex(domain);
     }
 
+    function applyDomain() {
+      domainMap();
+      index.domain([0, domain.length-1]);
+      zoomed();
+      // Apply outerPadding and widen the outer edges by pulling the domain in to ensure start and end bands are fully visible
+      index.domain(index.range().map(scale_widen(outerPadding, band)).map(index.invert));
+      return zoomed();
+    }
+
     scale.copy = function() {
-      return financetime(index.copy(), domain);
+      return financetime(index.copy(), domain, padding, outerPadding);
     };
 
     /**
@@ -99,6 +105,18 @@ module.exports = function(d3_scale_linear, d3_time, d3_bisect, techan_util_rebin
      */
     scale.band = function() {
       return band;
+    };
+
+    scale.outerPadding = function(_) {
+      if(!arguments.length) return outerPadding;
+      outerPadding = _;
+      return applyDomain();
+    };
+
+    scale.padding = function(_) {
+      if(!arguments.length) return padding;
+      padding = _;
+      return applyDomain();
     };
 
     scale.zoomable = function() {
@@ -161,8 +179,8 @@ module.exports = function(d3_scale_linear, d3_time, d3_bisect, techan_util_rebin
     return zoomed();
   }
 
-  function rangeBand(linear, domain) {
-    return (Math.abs(linear(domain.length-1) - linear(0))/Math.max(1, domain.length-1))*0.8;
+  function rangeBand(linear, domain, padding) {
+    return (Math.abs(linear(domain.length-1) - linear(0))/Math.max(1, domain.length-1))*(1-padding);
   }
 
   var dayFormat = d3_time.format('%b %e'),
