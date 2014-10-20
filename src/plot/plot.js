@@ -61,7 +61,7 @@ module.exports = function(d3_svg_line, d3_select) {
               .x(function(d) { return x(accessor_date(d)); } )
               .y0(function(d) { return y(yBase);})
               .y1(function(d) { return y(accessor_value(d)); } );
-      }
+      },
 
     interaction: {
       mousedispatch: function(dispatch) {
