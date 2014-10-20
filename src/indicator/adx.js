@@ -13,7 +13,6 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
       return data.map(function(d, i) {
         if(i < 1) return datum(p.accessor.d(d));
 
-
             var upMove = data[i].high - data[i-1].high;
             var downMove =   data[i-1].low - data[i].low;
             var plusDM = 0;
@@ -39,11 +38,7 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
             if(plusDi - minusDi !== 0){
               adxValue = Math.abs( (plusDi - minusDi)/(plusDi + minusDi) );
             }
-             var adx;
-
-
-            adx = 100 * adxEma.average(adxValue);
-
+            var adx = 100 * adxEma.average(adxValue);
 
             if(i >= period*2) {
                 return datum(p.accessor.d(d), adx, plusDi, minusDi);
