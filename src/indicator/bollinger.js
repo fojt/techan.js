@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // Injected dependencies
+module.exports = function(indicatorMixin, accessor_ohlc, indicator_sma) {  // Injected dependencies
   return function() { // Closure function
     var p = {},  // Container for private, direct access mixed in variables
         period = 20,
@@ -8,8 +8,7 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
     var sd;
 
     function indicator(data) {
-        var signalLine = indicator_ema().accessor(indicator.accessor()).period(period).init();
-
+        var signalLine = indicator_sma().accessor(indicator.accessor()).period(period).init();
         var j;
       return data.map(function(d, i) {
         var middleBand = signalLine.average(p.accessor(d));
@@ -27,8 +26,6 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
 
       }).filter(function(d) { return d.middleBand; });
     }
-
-
 
     indicator.period = function(_) {
       if (!arguments.length) return period;
