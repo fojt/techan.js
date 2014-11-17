@@ -10,8 +10,9 @@ module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependen
         oversold = 20;
 
     function indicator(data) {
+      var periodLength = (parseInt(period)+parseInt(periodD));
       return data.map(function(d, i) {
-        if(i >= period+periodD){
+        if(i >= periodLength ){
           var max = [];
           var min = [];
           var stochasticKBuffer = [];
@@ -23,16 +24,16 @@ module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependen
           var stochasticD = 0;
           for (var k = 0; k < periodD; k++) {
             for (var j = 0; j < period; j++) {
-              if(data[i-j-k].high > max[k]){
-                max[k] = data[i-j-k].high;
+              if(p.accessor.h(data[i-j-k]) > max[k]){
+                max[k] = p.accessor.h(data[i-j-k]);
               }
-              if(data[i-j-k].low < min[k]){
-                min[k] = data[i-j-k].low;
+              if(p.accessor.l(data[i-j-k]) < min[k]){
+                min[k] = p.accessor.l(data[i-j-k]);
               }
             }
             var diff = (max[k]-min[k]);
             if(diff > 0) {
-                stochasticKBuffer[k] = ((data[i - k].close - min[k]) / (max[k] - min[k])) * 100;
+                stochasticKBuffer[k] = ((p.accessor.c(data[i - k]) - min[k]) / (max[k] - min[k])) * 100;
             }else{
                 stochasticKBuffer[k] = 50;
             }
@@ -42,7 +43,7 @@ module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependen
           stochasticD /= periodD;
           return datum(p.accessor.d(d), stochasticK,stochasticD, middle, overbought, oversold);
         }
-        else return datum(p.accessor.d(d));
+        else return datum(p.accessor.d(d), null, null, middle,overbought,oversold);
       }).filter(function(d) { return d.stochasticK; });
     }
 
@@ -84,5 +85,5 @@ module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependen
 
 function datum(date, stochasticK,stochasticD, middle, overbought, oversold) {
   if(stochasticK) return { date: date, stochasticK: stochasticK,stochasticD:stochasticD, middle: middle, overbought: overbought, oversold: oversold };
-  else return { date: date, stochasticK: null,stochasticD:null, middle: null, overbought: null, oversold: null };
+  else return { date: date, stochasticK: null,stochasticD:null, middle: middle, overbought: overbought, oversold: oversold };
 }

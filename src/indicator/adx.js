@@ -10,11 +10,13 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
           minusDmEma = indicator_ema().accessor(indicator.accessor()).period(period).init(),
           trEma = indicator_ema().accessor(indicator.accessor()).period(period).init(),
           adxEma = indicator_ema().accessor(indicator.accessor()).period(period).init();
+
+      period = parseInt(period);
       return data.map(function(d, i) {
         if(i < 1) return datum(p.accessor.d(d));
 
-            var upMove = data[i].high - data[i-1].high;
-            var downMove =   data[i-1].low - data[i].low;
+            var upMove = p.accessor.h(data[i]) - p.accessor.h(data[i-1]);
+            var downMove =   p.accessor.l(data[i-1]) - p.accessor.l(data[i]);
             var plusDM = 0;
             if(upMove > downMove && upMove>0){
                 plusDM = upMove;
@@ -25,7 +27,10 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_ema) {  // In
                 minusDM = downMove;
             }
 
-            var TR = d3.max([(d.high- d.low),Math.abs(d.high - data[i-1].close),Math.abs(d.low - data[i-1].close) ]);
+            var TR = d3.max([
+                (p.accessor.h(d) - p.accessor.l(d)),
+                Math.abs(p.accessor.h(d) - p.accessor.c(data[i-1])),Math.abs(p.accessor.l(d) - p.accessor.c(data[i-1]))
+            ]);
 
             var plusDmAverage = plusDmEma.average(plusDM),
               minusDmAverage = minusDmEma.average(minusDM),

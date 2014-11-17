@@ -15,7 +15,7 @@ module.exports = function(indicatorMixin, accessor_ohlc, indicator_sma) {  // In
         if(i >= period) {
             var sum = 0;
             for(j = 0;j<period;j++){
-                sum += (Math.pow(   (data[i-j].close - middleBand)  ,2 ) );
+                sum += (Math.pow(   (p.accessor.c(data[i-j]) - middleBand)  ,2 ) );
             }
             sd = Math.sqrt( sum/period );
             var upperBand = middleBand+sdMultiplication*sd,

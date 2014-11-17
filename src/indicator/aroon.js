@@ -16,12 +16,12 @@ module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependen
           var min = 10000;
           var mini = 0;
           for (var j = 0; j < period; j++) {
-            if(data[i-j].high > max){
-              max = data[i-j].high;
+            if( p.accessor.h(data[i-j]) > max){
+              max = p.accessor.h(data[i-j]);
               maxi = j;
             }
-            if(data[i-j].low < min){
-              min = data[i-j].low;
+            if( p.accessor.l(data[i-j]) < min){
+              min = p.accessor.l(data[i-j]);
               mini = j;
             }
           }

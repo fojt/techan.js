@@ -8,7 +8,6 @@ module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependen
         overbought = 80,
         middle = 50,
         oversold = 20;
-
     function indicator(data) {
       return data.map(function(d, i) {
          if(i >= period){
@@ -17,16 +16,16 @@ module.exports = function(indicatorMixin, accessor_ohlc) {  // Injected dependen
           var min = 10000;
           var mini = 0;
           for (var j = 0; j < period; j++) {
-            if(data[i-j].high > max){
-              max = data[i-j].high;
+            if(p.accessor.h(data[i-j]) > max){
+              max = p.accessor.h(data[i-j]);
               maxi = j;
             }
-            if(data[i-j].low < min){
-              min = data[i-j].low;
+            if(p.accessor.l(data[i-j]) < min){
+              min = p.accessor.l(data[i-j]);
               mini = j;
             }
           }
-          var williams = ((data[i].close-min)/(max-min))*100;
+          var williams = ((p.accessor.c(data[i]) - min )/( max - min ))*100;
           return datum(p.accessor.d(d), williams, middle, overbought, oversold);
         }
         else return datum(p.accessor.d(d));
